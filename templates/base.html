@@ -62,9 +62,15 @@
             A focused platform for recording student milestones, managing
             teacher submissions, and keeping academic achievements organized.
           </p>
-          <div class="footer-actions" aria-label="Login shortcuts">
+          <div class="footer-actions" aria-label="Account shortcuts">
+            {% if session.get('student_id') %}
+            <a href="{{ url_for('student-dashboard') }}">Student Dashboard</a>
+            {% elif session.get('teacher_id') %}
+            <a href="{{ url_for('teacher-dashboard') }}">Teacher Dashboard</a>
+            {% else %}
             <a href="{{ url_for('student') }}">Student Login</a>
             <a href="{{ url_for('teacher') }}">Teacher Login</a>
+            {% endif %}
           </div>
         </section>
         <nav class="footer-section" aria-labelledby="footer-links-heading">
