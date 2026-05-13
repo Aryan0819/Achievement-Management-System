@@ -502,11 +502,10 @@ body {
   position: relative;
   overflow: hidden;
   background:
-    linear-gradient(135deg, rgba(255, 28, 28, 0.14), transparent 34%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 42%),
-    var(--bg-color);
+    linear-gradient(135deg, rgba(255, 28, 28, 0.1), transparent 34%),
+    var(--bg-gradient);
   color: var(--text-color);
-  padding: 4rem 1.5rem 1.25rem;
+  padding: 3rem 1.5rem 1.25rem;
   margin-top: auto;
   border-top: 1px solid var(--border-color);
 }
@@ -527,16 +526,16 @@ body {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(260px, 1.35fr) minmax(150px, 0.7fr) minmax(170px, 0.8fr) minmax(260px, 1fr);
+  grid-template-columns: minmax(0, 1.25fr) minmax(180px, 0.75fr) minmax(0, 1fr);
   gap: 2rem;
-  align-items: stretch;
+  align-items: start;
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
   background: var(--glass-bg);
   border: 1px solid var(--border-color);
-  border-radius: 20px;
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.22);
+  border-radius: 16px;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
   backdrop-filter: blur(14px);
 }
 
@@ -608,7 +607,7 @@ body {
   text-decoration: none;
   font-size: 0.86rem;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   transition: border-color 0.3s ease, color 0.3s ease, transform 0.3s ease, background 0.3s ease;
 }
 
@@ -674,10 +673,10 @@ body {
 }
 
 .footer-contact-card {
-  padding: 1.25rem;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .footer a:focus-visible {
@@ -705,6 +704,23 @@ body {
 }
 
 /* Responsive */
+
+@media (max-width: 992px) {
+  .footer-content {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  .footer-brand.footer-section {
+    padding-right: 0;
+    padding-bottom: 1.5rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+}
 
 @media (max-width: 768px) {
   .navbar {
@@ -845,8 +861,21 @@ body {
     padding: 1.5rem;
   }
 
+  .footer-section:not(:last-child) {
+    padding-right: 0;
+    padding-bottom: 1.5rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
   .footer-brand h3 {
     font-size: 1.25rem;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
   }
 }
 
