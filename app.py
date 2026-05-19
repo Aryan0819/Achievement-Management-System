@@ -5,6 +5,7 @@ import secrets
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 import datetime
+from datetime import timedelta
 from services.certificate_service import process_certificate
 from flask_wtf import CSRFProtect
 
@@ -1409,6 +1410,11 @@ def student():
             session["student_id"] = student_data[1]
             session["student_name"] = student_data[0]
             session["student_dept"] = student_data[6]
+            
+            if request.form.get('remember'):
+                session.permanent = True
+                app.permanent_session_lifetime = timedelta(days=30)
+                
             return redirect(url_for("student-dashboard"))
         else:
             return render_template("student.html", error="Invalid credentials. Please try again.", firebase_config=firebase_config)
