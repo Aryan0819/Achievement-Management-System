@@ -90,8 +90,6 @@ FLASK_ENV=development
 SECRET_KEY=your-strong-secret-key-here
 ```
 
-> ⚠️ **Never commit your `.env` file.** It is listed in `.gitignore` by default.
-
 **🌐 Open your browser** → `http://localhost:5000`
 
 ---
