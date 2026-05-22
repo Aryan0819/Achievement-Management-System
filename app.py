@@ -1,3 +1,5 @@
+
+from http import HTTPStatus
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import sqlite3
 import os
@@ -371,10 +373,10 @@ def teacher_required(f):
     return decorated_function
 
 # Custom 404 Error Handler
-@app.errorhandler(404)
+@app.errorhandler(HTTPStatus.NOT_FOUND)
 def page_not_found(error):
     """Handle 404 errors with custom template"""
-    return render_template("404.html"), 404
+    return render_template('404.html'), HTTPStatus.NOT_FOUND
 
 
 @app.route("/")
@@ -1018,8 +1020,7 @@ def admin_approve_user():
     action = request.form.get("action")  # "approve" or "reject"
 
     if user_type not in ["student", "teacher"]:
-        return jsonify({"success": False, "error": "Invalid user type"}), 400
-
+         return jsonify({"success": False, "error": "Invalid user type"}), HTTPStatus.BAD_REQUEST
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
 
@@ -1082,13 +1083,13 @@ def admin_departments():
 def admin_add_department():
     """Add a new department"""
     if not session.get("is_superuser"):
-        return jsonify({"success": False, "error": "Permission denied"}), 403
+        return jsonify({"success": False, "error": "Permission denied"}), HTTPStatus.FORBIDDEN
 
     dept_code = request.form.get("dept_code")
     dept_name = request.form.get("dept_name")
 
     if not dept_code or not dept_name:
-        return jsonify({"success": False, "error": "Department code and name are required"}), 400
+        return jsonify({"success": False, "error": "Department code and name are required"}), HTTPStatus.BAD_REQUEST
 
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -1100,10 +1101,10 @@ def admin_add_department():
         return jsonify({"success": True, "message": "Department added successfully"})
     except sqlite3.IntegrityError:
         connection.close()
-        return jsonify({"success": False, "error": "Department code already exists"}), 400
+        return jsonify({"success": False, "error": "Department code already exists"}), HTTPStatus.BAD_REQUEST
     except Exception as e:
         connection.close()
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @app.route("/admin/department/delete", methods=["POST"])
@@ -1124,7 +1125,7 @@ def admin_delete_department():
 
     if student_count > 0 or teacher_count > 0:
         connection.close()
-        return jsonify({"success": False, "error": "Cannot delete department that is in use"}), 400
+        return jsonify({"success": False, "error": "Cannot delete department that is in use"}), HTTPStatus.BAD_REQUEST
 
     try:
         cursor.execute("DELETE FROM departments WHERE id = ?", (dept_id,))
@@ -1133,7 +1134,7 @@ def admin_delete_department():
         return jsonify({"success": True, "message": "Department deleted successfully"})
     except Exception as e:
         connection.close()
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @app.route("/admin/categories")
@@ -1178,7 +1179,7 @@ def admin_add_category():
     description = request.form.get("description", "")
 
     if not category_code or not category_name:
-        return jsonify({"success": False, "error": "Category code and name are required"}), 400
+        return jsonify({"success": False, "error": "Category code and name are required"}), HTTPStatus.BAD_REQUEST
 
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -1191,10 +1192,10 @@ def admin_add_category():
         return jsonify({"success": True, "message": "Category added successfully"})
     except sqlite3.IntegrityError:
         connection.close()
-        return jsonify({"success": False, "error": "Category code already exists"}), 400
+        return jsonify({"success": False, "error": "Category code already exists"}), HTTPStatus.BAD_REQUEST
     except Exception as e:
         connection.close()
-        return jsonify({"success": False, "error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @app.route("/admin/export")
@@ -1491,7 +1492,7 @@ def api_get_achievement(achievement_id):
     connection.close()
     
     if not achievement:
-        return jsonify({"error": "Achievement not found or access denied"}), 404
+        return jsonify({"error": "Achievement not found or access denied"}), HTTPStatus.NOT_FOUND
     
     try:
         from utils.qr_handler import generate_qr_code, get_verification_url
@@ -1509,7 +1510,7 @@ def api_get_achievement(achievement_id):
         
     except Exception as e:
         print(f"Error generating QR code: {e}")
-        return jsonify({"error": "Failed to generate QR code"}), 500
+        return jsonify({"error": "Failed to generate QR code"}), HTTPStatus.INTERNAL_SERVER_ERROR
 
 
 @app.route("/verify-achievement/<int:achievement_id>")
@@ -1540,7 +1541,7 @@ def verify_achievement(achievement_id):
     connection.close()
     
     if not achievement:
-        return render_template("404.html"), 404
+        return render_template("404.html"), HTTPStatus.NOT_FOUND
     
     # Format dates for display
     issued_date = datetime.datetime.now().strftime("%B %d, %Y")
@@ -1589,7 +1590,7 @@ def export_achievement(achievement_id):
     connection.close()
     
     if not achievement:
-        return render_template("404.html"), 404
+        return render_template("404.html"), HTTPStatus.NOT_FOUND
     
     try:
         from utils.qr_handler import generate_qr_code, get_verification_url
